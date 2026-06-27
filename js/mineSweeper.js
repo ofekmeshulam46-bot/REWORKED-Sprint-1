@@ -64,6 +64,7 @@ function setDifficulty(button) {
     //todo: stop timer show without reset
 
     // gTimerMilliSeconds = 0
+    stopTimer();
     setTimerToZero();
     onInit();
     // gTimeLapsed = 0
@@ -78,6 +79,7 @@ function setDifficulty(button) {
     //todo: stop timer show without reset
 
     // clearInterval(gTimerInterval)
+    stopTimer();
     setTimerToZero();
     onInit();
   }
@@ -89,6 +91,7 @@ function setDifficulty(button) {
     //todo: stop timer show without reset
 
     // clearInterval(gTimerInterval)
+    stopTimer();
     setTimerToZero();
     onInit();
   }
@@ -207,17 +210,16 @@ function onCellClicked(elCell, i, j) {
   let isFirstCell = firstClick(i, j);
   if (isFirstCell) {
     gFirstCell = { i, j };
-    setGame();
+    startGame();
   }
   const cell = document.querySelector(`.cell-${i}-${j} span`);
   cell.classList.remove("hidden");
   if (gIsHint) {
     temporaryReveal(i, j);
-    gIsHint = false;
     return;
   }
 
-  function setGame() {
+  function startGame() {
     startTimer();
     settingRandomMines();
     settingMinesAroundCount(gBoard);
@@ -362,7 +364,7 @@ function temporaryReveal(rowIdx, colIdx) {
     }
     setTimeout(() => {
       removeHinted();
-    }, 1500);
+    }, 7000);
   }
 }
 function removeHinted() {
@@ -380,6 +382,7 @@ function removeHinted() {
           cellContainer.style.backgroundColor = "lightblue";
           cell.classList.add("hidden");
           flaggedCell.classList.remove("hidden");
+          gIsHint = false;
         }
       }
     }
