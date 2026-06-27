@@ -292,6 +292,7 @@ function onCellMarked(elCell, i, j, event) {
 }
 
 function giveHint(hint) {
+  if (!gGame.isOn) return; // cant use hints when game is over
   if (!gBoardRendered) return; //cant use hints before first move
   if (gIsHint || gCurrentlyHinting) return; //doesn't allow to click hint before using current
   if (hint.innerHTML === LIT_LIGHTBULB) return; //doesn't allow to get another hint from a used one
@@ -368,8 +369,6 @@ function removeHinted() {
           cellContainer.style.backgroundColor = "lightblue";
           cell.classList.add("hidden");
           flaggedCell.classList.remove("hidden");
-          console.log("ghint before", gIsHint);
-          console.log("ghint after", gIsHint);
           gCurrentlyHinting = null;
         }
       }
