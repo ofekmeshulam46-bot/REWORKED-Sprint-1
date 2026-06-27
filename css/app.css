@@ -4,12 +4,11 @@
   box-sizing: border-box;
 }
 
-
 body {
   background-color: rgb(9, 214, 183);
   /* color: white; */
   text-align: center;
-  margin: 0
+  margin: 0;
 }
 
 h2 {
@@ -28,7 +27,6 @@ h2 {
   text-align: center;
   margin-block-start: 2rem;
   margin-block-end: 2rem;
-
 }
 
 .score {
@@ -36,10 +34,7 @@ h2 {
   font-size: 5rem;
   font-family: monospace;
   margin-inline-end: 8rem;
-
 }
-
-
 
 .timer {
   min-height: 5rem;
@@ -66,19 +61,18 @@ h2 {
 }
 
 .-hint {
-  
-  width:5.5rem;
+  width: 5.5rem;
   min-height: 0rem;
   margin-block-start: 0rem;
   margin-block-end: clamp(0.7rem, 0.6rem, 1.5rem);
   margin-inline-start: 0rem;
-  margin-inline-end: clamp(3.7rem, .6rem, 1.5rem);
+  margin-inline-end: clamp(3.7rem, 0.6rem, 1.5rem);
   cursor: pointer;
   /* border-width: 0.2rem;
   border-color: black; */
 }
 
- .-hint img {
+.-hint img {
   width: 4.5rem;
 }
 
@@ -95,9 +89,7 @@ h2 {
   cursor: pointer;
   border-width: 0.2rem;
   border-color: black;
-
 }
-
 
 .easy {
   font-size: 3.5rem;
@@ -106,7 +98,6 @@ h2 {
   cursor: pointer;
   border-width: 0.2rem;
   border-color: black;
-
 }
 
 .medium {
@@ -116,7 +107,6 @@ h2 {
   cursor: pointer;
   border-width: 0.2rem;
   border-color: black;
-
 }
 
 .hard {
@@ -126,7 +116,6 @@ h2 {
   cursor: pointer;
   border-width: 0.2rem;
   border-color: black;
-
 }
 
 .modal {
@@ -139,12 +128,10 @@ h2 {
   margin: 0, 0, 0;
 }
 
-
 .modal span {
   font-size: 4rem;
   text-align: center;
   margin-block-start: auto;
-
 }
 
 .bottom-screen {

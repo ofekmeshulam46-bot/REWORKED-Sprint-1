@@ -160,8 +160,10 @@ function renderBoard() {
       const cell = gBoard[i][j];
       const className = `cell cell-${i}-${j}`;
       var cellContent = cell.isMine ? MINE : cell.minesAroundCount;
-      strHTML += `<td  class="${className}" onclick= onCellClicked(this,${i},${j}) oncontextmenu=onCellMarked(this,${i},${j},event) > <span class= hidden>${cellContent}</span>  <span class=flag></span>
-
+      strHTML += `<td  class="${className}" 
+      onclick= onCellClicked(this,${i},${j})
+       oncontextmenu=onCellMarked(this,${i},${j},event) >
+        <span class= hidden>${cellContent}</span><span class=flag></span>
                         </td>`;
     }
     strHTML += "</tr>";
@@ -208,9 +210,13 @@ function onCellClicked(elCell, i, j) {
     settingMinesAroundCount(gBoard);
     renderBoard(gBoard);
   }
-
   const cell = document.querySelector(`.cell-${i}-${j} span`);
   cell.classList.remove("hidden");
+  if (gIsHint) {
+    temporaryReveal(i, j);
+    gIsHint = false;
+    return;
+  }
 
   if (!gBoard[i][j].isMine && !gBoard[i][j].isRevealed) {
     gBoard[i][j].isRevealed = true;
@@ -324,31 +330,47 @@ function countNeighbors(rowIdx, colIdx, mat) {
   return;
 }
 
-function temporaryReveal(rowIdx, colIdx, mat) {
-  for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-    if (i < 0 || i >= mat.length) continue;
-
-    for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-      if (j < 0 || j >= mat[i].length) continue;
-      if (i === rowIdx && j === colIdx) continue;
-      var cell = document.querySelector(`.cell-${i}-${j} span`);
-      var flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`);
-      if (!mat[i][j].isRevealed) {
-        mat[i][j].isHinted = true;
+function temporaryReveal(rowIdx, colIdx) {
+  console.log("temporary reveal");
+  for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
+    if (i < 0 || i >= gBoard.length) continue;
+    for (let j = colIdx - 1; j <= colIdx + 1; j++) {
+      if (gBoard[i][j].isRevealed) continue;
+      if (j < 0 || j >= gBoard[i].length) continue;
+      let cellContainer = document.querySelector(`.cell-${i}-${j}`);
+      let cell = document.querySelector(`.cell-${i}-${j} span`);
+      let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`);
+      gBoard[i][j].isHinted = true;
+      if (gBoard[i][j].isHinted) {
+        console.log("was hinted");
+        gBoard[i][j].isRevealed = true;
+        // console.table(gBoard);
+        cell.classList.remove("hidden");
+        cellContainer.style.backgroundColor = "rgb(196, 238, 44)";
+      } //defense
+    }
+    setTimeout(() => {
+      removeHinted();
+    }, 1500);
+  }
+}
+function removeHinted() {
+  console.log("remove hint");
+  for (let i = 0; i < gBoard.length; i++) {
+    for (let j = 0; j < gBoard[0].length; j++) {
+      let cellContainer = document.querySelector(`.cell-${i}-${j}`);
+      let cell = document.querySelector(`.cell-${i}-${j} span`);
+      if (gBoard[i][j].isHinted) {
+        gBoard[i][j].ishinted = false;
+        gBoard[i][j].isRevealed = false;
+        if (cell && cell.classList) {
+          //defense
+          console.log(cell.innerHTML);
+          cellContainer.style.backgroundColor = "lightblue";
+          cell.classList.add("hidden");
+          console.log("done");
+        }
       }
-      if (!mat[i][j].isHinted) return;
-      mat[i][j].isRevealed = true;
-      cell.classList.remove("hidden");
-      // setTimeout(() => {
-      //   mat[i][j].isRevealed = false
-      //   cell.classList.add('hidden')
-      // }, 1500)
-      cell.style.color = "yellow";
-      setTimeout(() => {
-        cell.style.color = "black";
-        renderBoard();
-      }, 1500);
-      console.log("i,j:", i, j);
     }
   }
 }
