@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>MineSweeper</title>
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+
+  <body onload="onInit()">
+    <h2>
+      <span class="score">Score:<span>000</span></span>
+      <span class="header">Lives Remaining: <span class="lives"></span></span>
+      <span class="timer">000</span>
+    </h2>
+
+    <table class="board-container">
+      <tbody class="board"></tbody>
+    </table>
+
+    <!-- <button onclick="onInit()">Restart</button> -->
+
+    <div class="utility buttons">
+      <button class="-hint -one" onclick="giveHint(this)"></button>
+      <button class="-hint -two" onclick="giveHint(this)"><span></span></button>
+      <button class="-hint -three" onclick="giveHint(this)">
+        <span></span>
+      </button>
+
+      <button class="emoji" onclick="setTimerToZero();onInit()">
+        <span></span>
+      </button>
+    </div>
+    <div class="'dificullty buttons">
+      <button class="easy" onclick="setDifficulty(this)">Easy</button>
+      <button class="medium" onclick="setDifficulty(this)">Medium</button>
+      <button class="hard" onclick="setDifficulty(this)">Hard</button>
+    </div>
+    <div class="modal">
+      <h2><span>"you won!"</span></h2>
+    </div>
+    <div class="bottom-screen"></div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/mineSweeper.js"></script>
+  </body>
+</html>
