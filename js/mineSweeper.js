@@ -23,6 +23,7 @@ var gSafeCells;
 var gBoard;
 var gIsFirstClick;
 var gFirstCell;
+var gBoardRendered = null;
 var gLives;
 var gScore;
 var gTimerInterval = null;
@@ -160,7 +161,7 @@ function renderBoard() {
       const cell = gBoard[i][j];
       const className = `cell cell-${i}-${j}`;
       var cellContent = cell.isMine ? MINE : cell.minesAroundCount;
-      strHTML += `<td  class="${className}" 
+      strHTML += `<td  class="${className}"
       onclick= onCellClicked(this,${i},${j})
        oncontextmenu=onCellMarked(this,${i},${j},event) >
         <span class= hidden>${cellContent}</span><span class=flag></span>
@@ -201,14 +202,12 @@ function checkMineMarks() {
 
 function onCellClicked(elCell, i, j) {
   if (gBoard[i][j].isMarked) return;
+  if (gBoard[i][j].isRevealed) return;
   if (!gGame.isOn) return;
   let isFirstCell = firstClick(i, j);
   if (isFirstCell) {
-    startTimer();
     gFirstCell = { i, j };
-    settingRandomMines();
-    settingMinesAroundCount(gBoard);
-    renderBoard(gBoard);
+    setGame();
   }
   const cell = document.querySelector(`.cell-${i}-${j} span`);
   cell.classList.remove("hidden");
@@ -216,6 +215,14 @@ function onCellClicked(elCell, i, j) {
     temporaryReveal(i, j);
     gIsHint = false;
     return;
+  }
+
+  function setGame() {
+    startTimer();
+    settingRandomMines();
+    settingMinesAroundCount(gBoard);
+    renderBoard(gBoard);
+    gBoardRendered = true;
   }
 
   if (!gBoard[i][j].isMine && !gBoard[i][j].isRevealed) {
@@ -265,6 +272,7 @@ function onCellClicked(elCell, i, j) {
 function onCellMarked(elCell, i, j, event) {
   event.preventDefault();
   if (!gGame.isOn) return;
+  if (!gBoardRendered) return;
   if (gBoard[i][j].isRevealed) return;
   // const isFirstMark
   const flagCell = document.querySelector(`.cell-${i}-${j} .flag`);
@@ -280,6 +288,9 @@ function onCellMarked(elCell, i, j, event) {
 }
 
 function giveHint(hint) {
+  if (!gBoardRendered) return; //cant use hints before first move
+  if (gIsHint) return; //doesn't allow to click hint before using current
+  if (hint.innerHTML === LIT_LIGHTBULB) return; //doesn't allow to get another hint from a used one
   hint.innerHTML = LIT_LIGHTBULB;
   gIsHint = true;
 }
@@ -331,22 +342,22 @@ function countNeighbors(rowIdx, colIdx, mat) {
 }
 
 function temporaryReveal(rowIdx, colIdx) {
-  console.log("temporary reveal");
+  gIsHint = null;
   for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
     if (i < 0 || i >= gBoard.length) continue;
     for (let j = colIdx - 1; j <= colIdx + 1; j++) {
-      if (gBoard[i][j].isRevealed) continue;
       if (j < 0 || j >= gBoard[i].length) continue;
+      if (gBoard[i][j].isRevealed) continue;
       let cellContainer = document.querySelector(`.cell-${i}-${j}`);
       let cell = document.querySelector(`.cell-${i}-${j} span`);
       let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`);
       gBoard[i][j].isHinted = true;
       if (gBoard[i][j].isHinted) {
-        console.log("was hinted");
         gBoard[i][j].isRevealed = true;
         // console.table(gBoard);
         cell.classList.remove("hidden");
         cellContainer.style.backgroundColor = "rgb(196, 238, 44)";
+        flaggedCell.classList.add("hidden");
       } //defense
     }
     setTimeout(() => {
@@ -355,20 +366,20 @@ function temporaryReveal(rowIdx, colIdx) {
   }
 }
 function removeHinted() {
-  console.log("remove hint");
   for (let i = 0; i < gBoard.length; i++) {
     for (let j = 0; j < gBoard[0].length; j++) {
       let cellContainer = document.querySelector(`.cell-${i}-${j}`);
       let cell = document.querySelector(`.cell-${i}-${j} span`);
+      let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`);
+
       if (gBoard[i][j].isHinted) {
-        gBoard[i][j].ishinted = false;
+        gBoard[i][j].isHinted = false;
         gBoard[i][j].isRevealed = false;
         if (cell && cell.classList) {
           //defense
-          console.log(cell.innerHTML);
           cellContainer.style.backgroundColor = "lightblue";
           cell.classList.add("hidden");
-          console.log("done");
+          flaggedCell.classList.remove("hidden");
         }
       }
     }
