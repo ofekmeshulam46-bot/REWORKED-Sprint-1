@@ -30,6 +30,7 @@ var gTimerInterval = null;
 var gStartTime;
 var gTimeLapsed;
 var gIsHint;
+var gCurrentlyHinting;
 const gElModal = document.querySelector(".modal span");
 const gElEmoji = document.querySelector(".emoji span");
 const gElHeader = document.querySelector(".lives");
@@ -40,12 +41,13 @@ const elHintThree = document.querySelector(".-three ");
 
 function onInit() {
   gGame.isOn = true;
+  gBoardRendered = null;
   gSafeCells = gLevel.SIZE ** 2;
   gLives = 3;
   gElHeader.innerHTML = gLives;
   gScore = 0;
   elScore.innerHTML = gScore;
-  gIsHint = false;
+  gIsHint = null;
   gElModal.innerHTML = "";
   gElEmoji.innerHTML = NORMAL_SMILEY;
   elHintOne.innerHTML = LIGHTBULB;
@@ -291,27 +293,10 @@ function onCellMarked(elCell, i, j, event) {
 
 function giveHint(hint) {
   if (!gBoardRendered) return; //cant use hints before first move
-  if (gIsHint) return; //doesn't allow to click hint before using current
+  if (gIsHint || gCurrentlyHinting) return; //doesn't allow to click hint before using current
   if (hint.innerHTML === LIT_LIGHTBULB) return; //doesn't allow to get another hint from a used one
   hint.innerHTML = LIT_LIGHTBULB;
   gIsHint = true;
-}
-
-function gameOver(isWin) {
-  if (isWin) {
-    gElModal.style.color = "white";
-    gElModal.innerHTML = "you won!";
-    gElModal.style.textalign = "center";
-    gElEmoji.innerHTML = HAPPY_SMILEY;
-  } else if (!isWin) {
-    gElModal.innerHTML = "you lost!";
-    gElModal.style.color = "black";
-    gElModal.style.textalign = "center";
-    gElEmoji.innerHTML = SAD_SMILEY;
-  }
-  gElModal.classList.remove("hidden"); // display=false didnt work
-  gGame.isOn = false;
-  stopTimer(); // this and settimertozero dont work well
 }
 
 function countNeighbors(rowIdx, colIdx, mat) {
@@ -345,6 +330,7 @@ function countNeighbors(rowIdx, colIdx, mat) {
 
 function temporaryReveal(rowIdx, colIdx) {
   gIsHint = null;
+  gCurrentlyHinting = true;
   for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
     if (i < 0 || i >= gBoard.length) continue;
     for (let j = colIdx - 1; j <= colIdx + 1; j++) {
@@ -362,10 +348,10 @@ function temporaryReveal(rowIdx, colIdx) {
         flaggedCell.classList.add("hidden");
       } //defense
     }
-    setTimeout(() => {
-      removeHinted();
-    }, 7000);
   }
+  setTimeout(() => {
+    removeHinted();
+  }, 2000);
 }
 function removeHinted() {
   for (let i = 0; i < gBoard.length; i++) {
@@ -382,7 +368,9 @@ function removeHinted() {
           cellContainer.style.backgroundColor = "lightblue";
           cell.classList.add("hidden");
           flaggedCell.classList.remove("hidden");
-          gIsHint = false;
+          console.log("ghint before", gIsHint);
+          console.log("ghint after", gIsHint);
+          gCurrentlyHinting = null;
         }
       }
     }
@@ -416,4 +404,21 @@ function updateTimerDisplay() {
 
   const elTimer = document.querySelector(".timer");
   elTimer.innerText = `${seconds.padStart(3, "0")}`;
+}
+
+function gameOver(isWin) {
+  gGame.isOn = false;
+  stopTimer();
+  if (isWin) {
+    gElModal.style.color = "white";
+    gElModal.innerHTML = "you won!";
+    gElModal.style.textalign = "center";
+    gElEmoji.innerHTML = HAPPY_SMILEY;
+  } else if (!isWin) {
+    gElModal.innerHTML = "you lost!";
+    gElModal.style.color = "black";
+    gElModal.style.textalign = "center";
+    gElEmoji.innerHTML = SAD_SMILEY;
+  }
+  gElModal.classList.remove("hidden"); // display=false didnt work
 }
