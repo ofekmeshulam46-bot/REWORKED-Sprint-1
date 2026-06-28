@@ -118,10 +118,10 @@ function buildBoard() {
 }
 
 function settingRandomMines() {
-  var minesCount = 0;
-  for (var i = 0; minesCount < gLevel.MINES; i++) {
-    var randomI = getRandomIntExclusive(0, gLevel.SIZE);
-    var randomJ = getRandomIntExclusive(0, gLevel.SIZE);
+  let minesCount = 0;
+  for (let i = 0; minesCount < gLevel.MINES; i++) {
+    let randomI = getRandomIntExclusive(0, gLevel.SIZE);
+    let randomJ = getRandomIntExclusive(0, gLevel.SIZE);
     if (gBoard[randomI][randomJ].isMine) continue;
     gBoard[randomI][randomJ].isMine = true;
     minesCount++;
@@ -135,18 +135,18 @@ function settingRandomMines() {
 }
 
 function settingMinesAroundCount(board) {
-  for (var i = 0; i < board.length; i++) {
-    for (var j = 0; j < board[i].length; j++) {
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
       negsMinesCount(i, j, board);
     }
   }
 }
 
 function negsMinesCount(rowIdx, colIdx, mat) {
-  for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+  for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
     if (i < 0 || i >= mat.length) continue;
 
-    for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+    for (let j = colIdx - 1; j <= colIdx + 1; j++) {
       if (j < 0 || j >= mat[i].length) continue;
       if (i === rowIdx && j === colIdx) continue;
 
@@ -185,8 +185,8 @@ function renderCell(location, value) {
 
 function firstClick(i, j) {
   gIsFirstClick = true;
-  for (var k = 0; k < gBoard.length; k++) {
-    for (var l = 0; l < gBoard[0].length; l++) {
+  for (let k = 0; k < gBoard.length; k++) {
+    for (let l = 0; l < gBoard[0].length; l++) {
       if (k === i && l === j) continue;
       if (gBoard[k][l].isRevealed) {
         gIsFirstClick = false;
@@ -206,22 +206,23 @@ function checkMineMarks() {
 }
 
 function onCellClicked(elCell, i, j) {
-  if (gBoard[i][j].isMarked) return;
-  if (gBoard[i][j].isRevealed) return;
   if (!gGame.isOn) return;
   let isFirstCell = firstClick(i, j);
   if (isFirstCell) {
     gFirstCell = { i, j };
     startGame();
   }
-  const cell = document.querySelector(`.cell-${i}-${j} span`);
-  cell.classList.remove("hidden");
   if (gIsHint) {
     temporaryReveal(i, j);
     return;
   }
+  if (gBoard[i][j].isMarked) return;
+  if (gBoard[i][j].isRevealed) return;
+  const cell = document.querySelector(`.cell-${i}-${j} span`);
+  cell.classList.remove("hidden");
 
   function startGame() {
+    if (gBoardRendered) return; //defense against hints making game think its first click
     startTimer();
     settingRandomMines();
     settingMinesAroundCount(gBoard);
@@ -331,7 +332,7 @@ function countNeighbors(rowIdx, colIdx, mat) {
 
 function temporaryReveal(rowIdx, colIdx) {
   gIsHint = null;
-  gCurrentlyHinting = true;
+  // gCurrentlyHinting = true;
   for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
     if (i < 0 || i >= gBoard.length) continue;
     for (let j = colIdx - 1; j <= colIdx + 1; j++) {
@@ -340,6 +341,7 @@ function temporaryReveal(rowIdx, colIdx) {
       let cellContainer = document.querySelector(`.cell-${i}-${j}`);
       let cell = document.querySelector(`.cell-${i}-${j} span`);
       let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`);
+
       gBoard[i][j].isHinted = true;
       if (gBoard[i][j].isHinted) {
         gBoard[i][j].isRevealed = true;
@@ -351,7 +353,7 @@ function temporaryReveal(rowIdx, colIdx) {
     }
   }
   setTimeout(() => {
-    removeHinted();
+    removeHinted(rowIdx, colIdx);
   }, 2000);
 }
 function removeHinted() {
