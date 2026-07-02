@@ -40,6 +40,13 @@ const elHintOne = document.querySelector(".-hint ")
 const elHintTwo = document.querySelector(".-two ")
 const elHintThree = document.querySelector(".-three ")
 function onInit() {
+  //idk why without this, gIsHint is considered true even after oninit
+  if (gGame) {
+    clearTimeout(gGame.hintTimeout)
+    clearTimeout(gGame.removeHintTimeout)
+    console.log("clearing timeout over")
+  }
+
   gGame = {
     isOn: false,
     revealedCount: 0,
@@ -72,6 +79,7 @@ function onInit() {
   elHintThree.innerHTML = LIGHTBULB
   gBoard = buildBoard()
   renderBoard(gBoard)
+  console.log("oninit finished")
 }
 
 function setDifficulty(button) {
@@ -229,7 +237,8 @@ function onCellClicked(elCell, i, j) {
     gFirstCell = { i, j }
     startGame()
   }
-  if (gIsHint) {
+  if (gIsHint && !gCurrentlyHinting) {
+    console.log(gIsHint, "gIsHint")
     temporaryReveal(i, j)
     return
   }
@@ -239,7 +248,7 @@ function onCellClicked(elCell, i, j) {
   cell.classList.remove("hidden")
 
   function startGame() {
-    if (gBoardRendered) return
+    if (gBoardRendered) return //to stop hints activate startgame unintentionally
     startTimer()
     settingRandomMines()
     settingMinesAroundCount(gBoard)
@@ -349,9 +358,7 @@ function countNeighbors(rowIdx, colIdx, mat) {
 }
 
 function temporaryReveal(rowIdx, colIdx) {
-  console.log("temorary reveal")
-  console.log(gIsHint, "gIsHint")
-  // if (!gGame.hintTimeout || !gGame.removeHintTimeout) return
+  if (gFlashes >= 1 && (!gGame.hintTimeout || !gGame.removeHintTimeout)) return
   gCurrentlyHinting = true
   gHintedCellCount = 0
   for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
@@ -379,7 +386,7 @@ function temporaryReveal(rowIdx, colIdx) {
 
   if (gHintedCellCount === 0) return removeHinted()
   gGame.hintTimeout = setTimeout(() => {
-    console.log("timeout")
+    console.log("set timeout")
     removeHinted()
   }, gFlashTime)
 
@@ -412,11 +419,11 @@ function temporaryReveal(rowIdx, colIdx) {
         }
       }
     }
-    console.log(gFlashes, "gFlashes")
+    console.log(gFlashes, "gFlashes ")
     gFlashes++
     if (gFlashes < gFlashNum + 1) {
-      setTimeout(() => {
-        gGame.removeHintTimeout = temporaryReveal(rowIdx, colIdx)
+      gGame.removeHintTimeout = setTimeout(() => {
+        temporaryReveal(rowIdx, colIdx)
       }, gDisappearTime)
     }
   }
