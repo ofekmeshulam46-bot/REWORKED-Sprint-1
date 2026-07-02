@@ -1,5 +1,4 @@
 "use strict"
-
 const MINE = "💣"
 const FLAG = "🚩"
 const NORMAL_SMILEY = "😀"
@@ -12,12 +11,7 @@ var gLevel = {
   MINES: 2,
 }
 
-var gGame = {
-  isOn: false,
-  revealedCount: 0,
-  markedCount: 0,
-  secsPassed: 0,
-}
+var gGame
 
 var gSafeCells
 var gBoard
@@ -29,8 +23,15 @@ var gScore
 var gTimerInterval = null
 var gStartTime
 var gTimeLapsed
+// hinting
 var gIsHint
 var gCurrentlyHinting
+var gHintedCellCount
+var gFlashNum
+var gFlashes
+var gFlashTime //miliseconds
+var gDisappearTime //miliseconds
+//
 const gElModal = document.querySelector(".modal span")
 const gElEmoji = document.querySelector(".emoji span")
 const gElHeader = document.querySelector(".lives")
@@ -38,8 +39,15 @@ const elScore = document.querySelector("h2 .score")
 const elHintOne = document.querySelector(".-hint ")
 const elHintTwo = document.querySelector(".-two ")
 const elHintThree = document.querySelector(".-three ")
-
 function onInit() {
+  gGame = {
+    isOn: false,
+    revealedCount: 0,
+    markedCount: 0,
+    secsPassed: 0,
+    hintTimeout: null,
+    removeHintTimeout: null,
+  }
   gGame.isOn = true
   gBoardRendered = null
   gSafeCells = gLevel.SIZE ** 2
@@ -47,8 +55,16 @@ function onInit() {
   gElHeader.innerHTML = gLives
   gScore = 0
   elScore.innerHTML = gScore
+
+  //hinting
   gIsHint = null
   gCurrentlyHinting = null
+  gHintedCellCount = 0
+  gFlashNum = 2
+  gFlashes = 0
+  gFlashTime = 600
+  gDisappearTime = 400
+  //
   gElModal.innerHTML = ""
   gElEmoji.innerHTML = NORMAL_SMILEY
   elHintOne.innerHTML = LIGHTBULB
@@ -300,6 +316,7 @@ function giveHint(hint) {
   if (hint.innerHTML === LIT_LIGHTBULB) return //doesn't allow to get another hint from a used one
   hint.innerHTML = LIT_LIGHTBULB
   gIsHint = true
+  gFlashes = 0
 }
 
 function countNeighbors(rowIdx, colIdx, mat) {
@@ -332,20 +349,22 @@ function countNeighbors(rowIdx, colIdx, mat) {
 }
 
 function temporaryReveal(rowIdx, colIdx) {
-  gIsHint = null
+  console.log("temorary reveal")
+  console.log(gIsHint, "gIsHint")
+  // if (!gGame.hintTimeout || !gGame.removeHintTimeout) return
   gCurrentlyHinting = true
-  let hintedCellCount = 0
+  gHintedCellCount = 0
   for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
     if (i < 0 || i >= gBoard.length) continue
     for (let j = colIdx - 1; j <= colIdx + 1; j++) {
       if (j < 0 || j >= gBoard[i].length) continue
-      if (gBoard[i][j].isRevealed) continue
+      if (gBoard[i][j].isRevealed && !gBoard[i][j].isHinted) continue
       let cellContainer = document.querySelector(`.cell-${i}-${j}`)
       let cell = document.querySelector(`.cell-${i}-${j} span`)
       let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`)
       gBoard[i][j].isHinted = true
       if (gBoard[i][j].isHinted) {
-        hintedCellCount++
+        gHintedCellCount++
         gBoard[i][j].isRevealed = true
         cell.classList.remove("hidden")
         cellContainer.style.backgroundColor = "rgb(196, 238, 44)"
@@ -353,42 +372,55 @@ function temporaryReveal(rowIdx, colIdx) {
       }
     }
   }
-  if (hintedCellCount === 0) return removeHinted()
+  if (!gGame.isOn) {
+    renderBoard(gBoard)
+    // return // cant use hints when game is over
+  }
 
-  setTimeout(() => {
+  if (gHintedCellCount === 0) return removeHinted()
+  gGame.hintTimeout = setTimeout(() => {
+    console.log("timeout")
     removeHinted()
-  }, 2000)
+  }, gFlashTime)
+
   function removeHinted() {
+    console.log("remove hinted")
     for (let i = 0; i < gBoard.length; i++) {
       for (let j = 0; j < gBoard[0].length; j++) {
         let cellContainer = document.querySelector(`.cell-${i}-${j}`)
         let cell = document.querySelector(`.cell-${i}-${j} span`)
         let flaggedCell = document.querySelector(`.cell-${i}-${j} .flag`)
 
-        if (gBoard[i][j].isHinted || hintedCellCount === 0) {
-          if (hintedCellCount === 0) {
-            console.log("hinted cell count===0")
+        if (gBoard[i][j].isHinted || gHintedCellCount === 0) {
+          if (gHintedCellCount === 0) {
             gIsHint = true
             gCurrentlyHinting = false
-            console.log("hinted cell count===0 AFTER EFFECTS")
-
-            return
+            return //if theres no hinted cells at all - return
           }
-          gBoard[i][j].isHinted = false
-          gBoard[i][j].isRevealed = false
-          gCurrentlyHinting = null
           if (cell && cell.classList) {
             //defense
             cellContainer.style.backgroundColor = "lightblue"
             cell.classList.add("hidden")
             flaggedCell.classList.remove("hidden")
           }
+          if (gFlashes >= gFlashNum) {
+            gBoard[i][j].isHinted = false
+            gBoard[i][j].isRevealed = false
+            gIsHint = null
+            gCurrentlyHinting = null
+          }
         }
       }
     }
+    console.log(gFlashes, "gFlashes")
+    gFlashes++
+    if (gFlashes < gFlashNum + 1) {
+      setTimeout(() => {
+        gGame.removeHintTimeout = temporaryReveal(rowIdx, colIdx)
+      }, gDisappearTime)
+    }
   }
 }
-
 function startTimer() {
   gStartTime = Date.now()
   gTimerInterval = setInterval(updateTimerDisplay, 31)
