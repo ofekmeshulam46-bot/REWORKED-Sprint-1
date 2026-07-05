@@ -12,7 +12,7 @@ var gLevel = {
 }
 
 var gGame
-
+var gElContainer = null
 var gSafeCells
 var gBoard
 var gIsFirstClick
@@ -32,19 +32,18 @@ var gFlashes
 var gFlashTime //miliseconds
 var gDisappearTime //miliseconds
 //
-const gElModal = document.querySelector(".modal span")
-const gElEmoji = document.querySelector(".emoji span")
-const gElHeader = document.querySelector(".lives")
+const gElModal = document.querySelector(".main-modal span")
+const gElEmoji = document.querySelector(".reset-emoji span")
+const gElLivesNum = document.querySelector(".lives-num")
 const elScore = document.querySelector("h2 .score")
-const elHintOne = document.querySelector(".-hint ")
-const elHintTwo = document.querySelector(".-two ")
-const elHintThree = document.querySelector(".-three ")
+const elHintOne = document.querySelector(".hint-one ")
+const elHintTwo = document.querySelector(".hint-two ")
+const elHintThree = document.querySelector(".hint-three ")
 function onInit() {
-  //idk why without this, gIsHint is considered true even after oninit
+  // - idk why, without this: gIsHint is considered true even after oninit
   if (gGame) {
     clearTimeout(gGame.hintTimeout)
     clearTimeout(gGame.removeHintTimeout)
-    console.log("clearing timeout over")
   }
 
   gGame = {
@@ -59,7 +58,7 @@ function onInit() {
   gBoardRendered = null
   gSafeCells = gLevel.SIZE ** 2
   gLives = 3
-  gElHeader.innerHTML = gLives
+  gElLivesNum.innerHTML = gLives
   gScore = 0
   elScore.innerHTML = gScore
 
@@ -67,7 +66,7 @@ function onInit() {
   gIsHint = null
   gCurrentlyHinting = null
   gHintedCellCount = 0
-  gFlashNum = 2
+  gFlashNum = 1 //its 2 overall
   gFlashes = 0
   gFlashTime = 600
   gDisappearTime = 400
@@ -79,7 +78,6 @@ function onInit() {
   elHintThree.innerHTML = LIGHTBULB
   gBoard = buildBoard()
   renderBoard(gBoard)
-  console.log("oninit finished")
 }
 
 function setDifficulty(button) {
@@ -88,24 +86,23 @@ function setDifficulty(button) {
       SIZE: 4,
       MINES: 2,
     }
-    //todo: stop timer show without reset
-
-    // gTimerMilliSeconds = 0
+    gElContainer.classList.add("Easy")
+    gElContainer.classList.remove("Medium")
+    gElContainer.classList.remove("Hard")
     stopTimer()
     setTimerToZero()
     onInit()
-    // gTimeLapsed = 0
-    // updateTimerDisplay()
-    // startTimer()
   }
   if (button.innerHTML === "Medium") {
     gLevel = {
       SIZE: 8,
       MINES: 14,
     }
-    //todo: stop timer show without reset
 
-    // clearInterval(gTimerInterval)
+    gElContainer.classList.add("Medium")
+    gElContainer.classList.remove("Easy")
+    gElContainer.classList.remove("Hard")
+
     stopTimer()
     setTimerToZero()
     onInit()
@@ -115,9 +112,10 @@ function setDifficulty(button) {
       SIZE: 12,
       MINES: 32,
     }
-    //todo: stop timer show without reset
+    gElContainer.classList.add("Hard")
+    gElContainer.classList.remove("Easy")
+    gElContainer.classList.remove("Medium")
 
-    // clearInterval(gTimerInterval)
     stopTimer()
     setTimerToZero()
     onInit()
@@ -186,21 +184,20 @@ function renderBoard() {
   var lines = gBoard.length
   var columns = gBoard[0].length
   for (var i = 0; i < lines; i++) {
-    strHTML += "<tr>"
     for (var j = 0; j < columns; j++) {
       const cell = gBoard[i][j]
       const className = `cell cell-${i}-${j}`
       var cellContent = cell.isMine ? MINE : cell.minesAroundCount
-      strHTML += `<td  class="${className}"
+      strHTML += `<div  class="${className}"a
       onclick= onCellClicked(this,${i},${j})
        oncontextmenu=onCellMarked(this,${i},${j},event) >
         <span class= hidden>${cellContent}</span><span class=flag></span>
-                        </td>`
+                        </div>`
     }
-    strHTML += "</tr>"
   }
-  const elContainer = document.querySelector(".board")
-  elContainer.innerHTML = strHTML
+  gElContainer = document.querySelector(".board-container")
+  gElContainer.innerHTML = strHTML
+  gElContainer.classList.add("Easy") //need an initial level to load for people to see
 }
 
 function renderCell(location, value) {
@@ -238,7 +235,6 @@ function onCellClicked(elCell, i, j) {
     startGame()
   }
   if (gIsHint && !gCurrentlyHinting) {
-    console.log(gIsHint, "gIsHint")
     temporaryReveal(i, j)
     return
   }
@@ -274,7 +270,7 @@ function onCellClicked(elCell, i, j) {
   } else if (gBoard[i][j].isMine) {
     gBoard[i][j].isRevealed = true
     gLives--
-    gElHeader.innerHTML = gLives
+    gElLivesNum.innerHTML = gLives
     if (gLives > 0) {
       setTimeout(() => {
         gBoard[i][j].isRevealed = false
@@ -386,12 +382,10 @@ function temporaryReveal(rowIdx, colIdx) {
 
   if (gHintedCellCount === 0) return removeHinted()
   gGame.hintTimeout = setTimeout(() => {
-    console.log("set timeout")
     removeHinted()
   }, gFlashTime)
 
   function removeHinted() {
-    console.log("remove hinted")
     for (let i = 0; i < gBoard.length; i++) {
       for (let j = 0; j < gBoard[0].length; j++) {
         let cellContainer = document.querySelector(`.cell-${i}-${j}`)
@@ -419,7 +413,6 @@ function temporaryReveal(rowIdx, colIdx) {
         }
       }
     }
-    console.log(gFlashes, "gFlashes ")
     gFlashes++
     if (gFlashes < gFlashNum + 1) {
       gGame.removeHintTimeout = setTimeout(() => {

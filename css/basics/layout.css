@@ -1,0 +1,59 @@
+.main-layout {
+  /* background-color: pink; */
+  display: grid;
+  grid-template-columns: 1fr 60vw 1fr;
+  grid-template-rows: 20vh auto 10vh 10vh 10vh 20vh 1fr;
+  gap: 0px;
+  /* min-height: 100vh; */
+  /* justify-content: center;
+  align-content: center; */
+
+  /* > * {
+    grid-column: 2;
+  } */
+
+  grid-template-areas:
+    "header header header "
+    ". main . "
+    ". difficulty-buttons . "
+    ". hints . "
+    ". reset-emoji . "
+    "modal modal modal "
+    "footer footer footer ";
+
+  .main-header {
+    grid-area: header;
+  }
+  /* .left-sidebar {
+    grid-area: left-sidebar;
+  }
+  .right-sidebar {
+    grid-area: right-sidebar;
+  } */
+
+  .main-content {
+    grid-area: main;
+  }
+
+  .reset-emoji {
+    grid-area: reset-emoji;
+    justify-self: center;
+  }
+  .difficulty-buttons {
+    grid-area: difficulty-buttons;
+  }
+  .hint-icons {
+    grid-area: hints;
+  }
+  .main-modal {
+    grid-area: modal;
+  }
+
+  footer {
+    grid-area: footer;
+  }
+
+  /* .full {
+    justify-self: stretch;
+  } */
+}

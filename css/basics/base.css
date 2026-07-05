@@ -1,0 +1,235 @@
+/* lightseagreen  lightskyblue */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background-color: rgb(9, 214, 183);
+  /* color: white; */
+  text-align: center;
+}
+
+.board-container {
+  justify-self: center;
+  width: max-content;
+
+  display: grid;
+
+  justify-content: space-around;
+  gap: 0;
+
+  margin-block-end: 1vh;
+  table-layout: fixed;
+  &.Easy {
+    grid-template-columns: repeat(4, 1fr);
+    .cell {
+      width: 11vmin;
+      height: 11vmin;
+    }
+  }
+  &.Medium {
+    grid-template-columns: repeat(8, 1fr);
+    .cell {
+      width: 7.5vmin;
+      height: 7.5vmin;
+    }
+  }
+  &.Hard {
+    grid-template-columns: repeat(12, 1fr);
+    .cell {
+      width: 6vmin;
+      height: 6vmin;
+    }
+  }
+  /* border-collapse: collapse; */
+
+  .cell {
+    /* (height equal to width) */
+    aspect-ratio: 1 / 1;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* defense? */
+    overflow: hidden;
+    /* fix border collapse */
+    margin-right: -0.3rem;
+    margin-bottom: -0.3rem;
+
+    /* display: grid; */
+    /* grid-auto-flow: row; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* font-size: clamp(1.15rem, 2rem, 2.5rem); */
+    /* width: clamp(3rem, 5vw, 14rem); */
+    /* min-height: 3rem; */
+    /* height: clamp(5.8rem, 8vh, 6rem); */
+
+    /* font-size: 1vmin; */
+    background-color: lightblue;
+    cursor: pointer;
+    &:hover {
+      filter: brightness(0.9);
+    }
+    border: 0.3rem solid darkblue;
+    /* border-width: 1rem;
+    border-color: black; */
+  }
+}
+
+.main-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-self: stretch;
+  background-color: rgb(221, 140, 115);
+  color: black;
+
+  text-align: center;
+  margin-block-end: 2vh;
+}
+
+.score {
+  font-family: monospace;
+  font-size: 2em;
+}
+.lives {
+  font-family: monospace;
+  font-size: 1.8em;
+}
+.timer {
+  font-family: monospace;
+  font-size: 2em;
+}
+
+.hidden {
+  display: none;
+}
+
+.dynamic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hint-icons {
+  display: grid;
+  grid-template-columns:
+    10% 10% 10% 10% 10%
+    10% 10% 10% 10% 10%;
+
+  margin-inline-start: 5vw;
+  .hint-one {
+    grid-column: 3;
+  }
+  .hint-two {
+    grid-column: 4;
+  }
+  .hint-three {
+    grid-column: 5;
+  }
+  gap: 2vw;
+
+  .-hint {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    &:hover {
+      filter: brightness(0.9);
+    }
+    /* border-width: 0.2rem;
+      border-color: black; */
+  }
+
+  .-hint img {
+    min-width: 4.5rem;
+  }
+}
+
+/* .-hint span{
+  width: 330em;
+} */
+
+.reset-emoji {
+  display: flex;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  width: 20vw;
+  max-width: 100px;
+  line-height: 1;
+  margin-block: 0.5vh;
+
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.9);
+  }
+  border-width: 0.2rem;
+  border-color: black;
+}
+
+.reset-emoji span {
+  justify-self: center;
+  font-size: 4cqw;
+}
+
+.difficulty-buttons {
+  display: grid;
+  grid-template-columns:
+    10% 10% 10% 10% 10%
+    10% 10% 10% 10% 10%;
+  margin-inline-start: 5vw;
+  margin-block-end: 1.5vh;
+  /* to get rid of double borders when they are touching(are they?) */
+}
+
+.easy-level,
+.medium-level,
+.hard-level {
+  font-size: 3.5rem;
+  min-height: 4.6rem;
+  cursor: pointer;
+  border-width: 0.2rem;
+
+  border-color: black;
+  &:hover {
+    filter: brightness(0.9);
+  }
+}
+.easy-level {
+  grid-column: 1 / 4;
+}
+
+.medium-level {
+  grid-column: 4 /7;
+}
+
+.hard-level {
+  grid-column: 7/10;
+  column-span: 2;
+}
+
+.main-modal {
+  background-color: rgb(221, 140, 115);
+  height: 15rem;
+  font-size: 5rem;
+  text-align: center;
+  /* padding-bottom: 4% */
+  margin-top: 0rem;
+  margin: 0;
+}
+
+.main-modal span {
+  font-size: 4rem;
+  text-align: center;
+}
+
+footer {
+  background-color: rgb(73, 181, 224);
+  min-height: 24rem;
+}

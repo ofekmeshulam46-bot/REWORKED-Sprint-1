@@ -5,51 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>MineSweeper</title>
-    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
 
-  <body onload="onInit()">
-    <h2>
+  <body class="main-layout" onload="onInit()">
+    <h2 class="main-header grid">
       <span class="score">Score:<span>000</span></span>
-      <span class="header">Lives Remaining: <span class="lives"></span></span>
+      <span class="lives"
+        >Lives Remaining: <span class="lives-num"></span
+      ></span>
       <span class="timer">000</span>
     </h2>
 
-    <table class="board-container">
+    <div class="board-container main-content">
       <tbody class="board"></tbody>
-    </table>
+    </div>
 
     <!-- <button onclick="onInit()">Restart</button> -->
+    <button
+      class="reset-emoji"
+      onclick="(stopTimer(), setTimerToZero(), onInit())"
+    >
+      <span></span>
+    </button>
 
-    <div class="utility buttons">
-      <button class="-hint -one" onclick="giveHint(this)"></button>
-      <button class="-hint -two" onclick="giveHint(this)"><span></span></button>
-      <button class="-hint -three" onclick="giveHint(this)">
-        <span></span>
-      </button>
-
-      <button
-        class="emoji"
-        s
-        onclick="
-          stopTimer()
-          setTimerToZero()
-          onInit()
-        "
-      >
-        <span></span>
-      </button>
+    <div class="difficulty-buttons">
+      <button class="easy-level" onclick="setDifficulty(this)">Easy</button>
+      <button class="medium-level" onclick="setDifficulty(this)">Medium</button>
+      <button class="hard-level" onclick="setDifficulty(this)">Hard</button>
     </div>
-    <div class="'dificullty buttons">
-      <button class="easy" onclick="setDifficulty(this)">Easy</button>
-      <button class="medium" onclick="setDifficulty(this)">Medium</button>
-      <button class="hard" onclick="setDifficulty(this)">Hard</button>
+    <div class="hint-icons">
+      <span class="-hint hint-one dynamic" onclick="giveHint(this)"></span>
+      <span class="-hint hint-two dynamic" onclick="giveHint(this)">
+        <span></span>
+      </span>
+      <span class="-hint hint-three dynamic" onclick="giveHint(this)"></span>
     </div>
-    <div class="modal">
+    <div class="main-modal">
       <h2><span>"you won!"</span></h2>
     </div>
-    <div class="bottom-screen"></div>
-
+    <div class="footer"></div>
+    <footer></footer>
     <script src="js/utils.js"></script>
     <script src="js/mineSweeper.js"></script>
   </body>
