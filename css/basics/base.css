@@ -1,6 +1,12 @@
-lightseagreen lightskyblue * {
+* {
   box-sizing: border-box;
   margin: 0;
+}
+
+:root {
+  --easyLevel: ;
+  --mediumLevel: ;
+  --hardLevel: ;
 }
 
 body {
@@ -44,21 +50,21 @@ body {
   }
 
   &.Easy {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--easyLevel), 1fr);
     .cell {
       width: 11vmin;
       height: 11vmin;
     }
   }
   &.Medium {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(var(--mediumLevel), 1fr);
     .cell {
       width: 7.5vmin;
       height: 7.5vmin;
     }
   }
   &.Hard {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(var(--hardLevel), 1fr);
     .cell {
       width: 6vmin;
       height: 6vmin;

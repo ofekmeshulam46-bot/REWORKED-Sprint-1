@@ -7,8 +7,8 @@ const SAD_SMILEY = "🤯"
 const LIGHTBULB = '<img src="imgs/hint.PNG">'
 const LIT_LIGHTBULB = '<img src="imgs/clicked_hint.PNG">'
 var gLevel = {
-  SIZE: 4,
-  MINES: 2,
+  size: 4,
+  mines: 2,
 }
 
 var gGame
@@ -56,7 +56,7 @@ function onInit() {
   }
   gGame.isOn = true
   gBoardRendered = null
-  gSafeCells = gLevel.SIZE ** 2
+  gSafeCells = gLevel.size ** 2
   gLives = 3
   gElLivesNum.innerHTML = gLives
   gScore = 0
@@ -78,14 +78,18 @@ function onInit() {
   gElEmoji.innerHTML = NORMAL_SMILEY
   gBoard = buildBoard()
   renderBoard(gBoard)
+  //css
+  cssRegistry.set("--easyLevel", gLevel.size)
+  //
 }
 
 function setDifficulty(button) {
   if (button.innerHTML === "Easy") {
     gLevel = {
-      SIZE: 4,
-      MINES: 2,
+      size: 4,
+      mines: 2,
     }
+    cssRegistry.set("--easyLevel", gLevel.size)
     gElContainer.classList.add("Easy")
     gElContainer.classList.remove("Medium")
     gElContainer.classList.remove("Hard")
@@ -95,10 +99,10 @@ function setDifficulty(button) {
   }
   if (button.innerHTML === "Medium") {
     gLevel = {
-      SIZE: 8,
-      MINES: 14,
+      size: 8,
+      mines: 14,
     }
-
+    cssRegistry.set("--mediumLevel", gLevel.size)
     gElContainer.classList.add("Medium")
     gElContainer.classList.remove("Easy")
     gElContainer.classList.remove("Hard")
@@ -109,9 +113,11 @@ function setDifficulty(button) {
   }
   if (button.innerHTML === "Hard") {
     gLevel = {
-      SIZE: 12,
-      MINES: 32,
+      size: 12,
+      mines: 32,
     }
+    cssRegistry.set("--hardLevel", gLevel.size)
+
     gElContainer.classList.add("Hard")
     gElContainer.classList.remove("Easy")
     gElContainer.classList.remove("Medium")
@@ -124,9 +130,9 @@ function setDifficulty(button) {
 
 function buildBoard() {
   var board = []
-  for (var i = 0; i < gLevel.SIZE; i++) {
+  for (var i = 0; i < gLevel.size; i++) {
     board.push([])
-    for (var j = 0; j < gLevel.SIZE; j++) {
+    for (var j = 0; j < gLevel.size; j++) {
       board[i][j] = {
         minesAroundCount: 0,
         isRevealed: false,
@@ -142,9 +148,9 @@ function buildBoard() {
 
 function settingRandomMines() {
   var minesCount = 0
-  for (var i = 0; minesCount < gLevel.MINES; i++) {
-    var randomI = getRandomIntExclusive(0, gLevel.SIZE)
-    var randomJ = getRandomIntExclusive(0, gLevel.SIZE)
+  for (var i = 0; minesCount < gLevel.mines; i++) {
+    var randomI = getRandomIntExclusive(0, gLevel.size)
+    var randomJ = getRandomIntExclusive(0, gLevel.size)
     if (gBoard[randomI][randomJ].isMine) continue
     gBoard[randomI][randomJ].isMine = true
     minesCount++
