@@ -70,12 +70,12 @@ function onInit() {
   gFlashes = 0
   gFlashTime = 600
   gDisappearTime = 400
-  //
-  gElModal.innerHTML = ""
-  gElEmoji.innerHTML = NORMAL_SMILEY
   elHintOne.innerHTML = LIGHTBULB
   elHintTwo.innerHTML = LIGHTBULB
   elHintThree.innerHTML = LIGHTBULB
+  //
+  gElModal.innerHTML = ""
+  gElEmoji.innerHTML = NORMAL_SMILEY
   gBoard = buildBoard()
   renderBoard(gBoard)
 }
@@ -437,15 +437,18 @@ function setTimerToZero() {
 }
 
 function updateTimerDisplay() {
-  var now = Date.now()
-  var gTimeLapsed = now - gStartTime
-  const ms = (gTimeLapsed % 1000) + ""
-  const totalSeconds = (gTimeLapsed - ms) / 1000
-  const seconds = (totalSeconds % 60) + ""
-  const minutes = Math.floor((totalSeconds - seconds) / 60) + ""
+  if (!gStartTime) return
+  //^ Prevents crash if timer hasn't started
+  let now = Date.now()
+  let gTimeLapsed = now - gStartTime
+  let roundedSeconds = Math.floor(gTimeLapsed / 1000)
+  let roundedMinutes = Math.floor(roundedSeconds / 60)
+  roundedSeconds = roundedSeconds - 60 * roundedMinutes
+  const stringedSeconds = String(roundedSeconds)
+  const stringedMinutes = String(roundedMinutes)
 
   const elTimer = document.querySelector(".timer")
-  elTimer.innerText = `${seconds.padStart(3, "0")}`
+  elTimer.innerText = `${stringedMinutes.padStart(2, "0")}:${stringedSeconds.padStart(2, "0")}`
 }
 
 function gameOver(isWin) {

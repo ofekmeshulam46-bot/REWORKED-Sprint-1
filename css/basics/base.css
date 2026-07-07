@@ -77,17 +77,28 @@ body {
   margin-block-end: 2vh;
 }
 
-.score {
+.score-container {
   font-family: monospace;
   font-size: 2em;
+  .score {
+    font-family: monospace;
+    font-size: 1em;
+  }
 }
 .lives {
   font-family: monospace;
   font-size: 1.8em;
 }
-.timer {
+.timer-container {
+  display: flex;
+  flex-direction: column;
+
   font-family: monospace;
-  font-size: 2em;
+  font-size: 1.5em;
+  .timer {
+    font-family: monospace;
+    font-size: 1em;
+  }
 }
 
 .hint-icons {
